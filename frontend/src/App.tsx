@@ -101,14 +101,17 @@ function App() {
             </RootLayout>
           }
         />
-        <Route
-          path="/writing-assistant"
-          element={
-            <RootLayout>
-              <WritingAssistantComponent />
-            </RootLayout>
-          }
-        />
+
+
+<Route
+  path="/writing-assistant"
+  element={
+    <RootLayout>
+      <WritingAssistantComponent />
+    </RootLayout>
+  }
+/>
+
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardComponent />} />
 

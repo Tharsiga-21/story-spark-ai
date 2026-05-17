@@ -1,4 +1,5 @@
-import { JSX } from "react";
+import { JSX, useEffect, useState } from "react";
+import WritingAssistantComponent from "./components/writing-assistant/writing_assistant.component";
 import {
   BrowserRouter as Router,
   Routes,
@@ -32,6 +33,8 @@ import ContactUsComponent from "./components/footer/contact-us.tsx";
 import BlogComponent from "./components/footer/blog.tsx";
 import HelpCenterComponent from "./components/footer/help-center.tsx";
 import GuidelinesComponent from "./components/footer/guidelines.tsx";
+import TemplatesComponent from "./components/templates/templates.component";
+import CommunityComponent from "./components/community/community.component";
 const ProtectedRoute = ({
   element,
   allowedRoles,
@@ -50,8 +53,35 @@ const ProtectedRoute = ({
 };
 
 function App() {
+
+
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("theme") === "dark"
+  );
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
+
   return (
     <Router>
+
+      {/* Dark Mode Toggle Button */}
+      {/* <div className="fixed top-4 right-4 z-50">
+        <button
+          onClick={() => setDarkMode(!darkMode)}
+          className="px-4 py-2 rounded-md bg-black text-white dark:bg-white dark:text-black transition-colors duration-300 shadow-md"
+        >
+          {darkMode ? "☀️ Light" : "🌙 Dark"}
+        </button>
+      </div> */}
+
       <Routes>
         <Route
           path="/"
@@ -62,9 +92,25 @@ function App() {
             </RootLayout>
           }
         />
-
+        <Route
+          path="/templates"
+          element={
+            <RootLayout>
+              <TemplatesComponent />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/writing-assistant"
+          element={
+            <RootLayout>
+              <WritingAssistantComponent />
+            </RootLayout>
+          }
+        />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<DashboardComponent />} />
+
           <Route
             path="post-lists"
             element={
@@ -79,6 +125,7 @@ function App() {
               />
             }
           />
+
           <Route
             path="settings"
             element={
@@ -88,6 +135,7 @@ function App() {
               />
             }
           />
+
           <Route
             path="profile"
             element={
@@ -102,6 +150,7 @@ function App() {
               />
             }
           />
+
           <Route path="users">
             <Route
               index
@@ -117,6 +166,7 @@ function App() {
                 />
               }
             />
+
             <Route
               path="list"
               element={
@@ -132,6 +182,7 @@ function App() {
               }
             />
           </Route>
+
           <Route
             path="writers"
             element={
@@ -150,13 +201,23 @@ function App() {
 
         <Route path="/stories" element={<StoriesComponent />} />
         <Route path="/login" element={<LoginComponent />} />
+
         <Route
           path="/auth/email-validation"
           element={<EmailValidationComponent />}
         />
+
         <Route path="/signup" element={<SignUpComponent />} />
         <Route path="/pricing" element={<PricingComponent />} />
         <Route path="/explore" element={<ExploreComponent />} />
+        <Route
+          path="/community"
+          element={
+            <RootLayout>
+              <CommunityComponent />
+            </RootLayout>
+          }
+        />
         <Route path="/post/:id" element={<PostDetailsComponent />} />
         <Route path="/about-us" element={<AboutUsComponent />} />
         <Route path="/career" element={<CareerComponent />} />
@@ -166,8 +227,8 @@ function App() {
         <Route path="/guidelines" element={<GuidelinesComponent />} />
         <Route path="*" element={<NotFoundComponent />} />
       </Routes>
+
     </Router>
   );
 }
-
 export default App;

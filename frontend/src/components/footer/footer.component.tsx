@@ -8,7 +8,19 @@ const FooterComponent = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo Section */}
           <div>
-            <img className="h-16" src={logo} alt="AIStoriesBook" />
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
+              }}
+            >
+              <img className="h-16" src={logo} alt="AIStoriesBook" />
+            </a>
             <p className="mt-4 text-sm text-gray-400">
               Empowering voices through the art of writing. Connect, create,
               and inspire.
@@ -71,6 +83,15 @@ const FooterComponent = () => {
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Help Center
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/community"
+                  className="text-base text-gray-400 hover:text-white transition-colors duration-200"
+                >
+                  Community
                 </Link>
               </li>
 

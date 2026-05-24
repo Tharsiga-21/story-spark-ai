@@ -137,7 +137,7 @@ export default function Contact() {
         {/* Form Container */}
         <div className="w-full max-w-lg group relative">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-[1.5rem] blur opacity-10 group-hover:opacity-15 transition duration-1000"></div>
-          
+
           <form
             onSubmit={submitHandler}
             className="
@@ -291,10 +291,10 @@ export default function Contact() {
                 ) : (
                   <>
                     Send Message
-                    <svg 
-                      className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" 
-                      fill="none" 
-                      stroke="currentColor" 
+                    <svg
+                      className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

@@ -173,8 +173,9 @@ export default function Contact() {
               text-sm
               sm:text-base
               outline-none
-              transition-all
+              transition-[border-color,box-shadow]
               duration-300
+              hover:border-white/30
               focus:border-yellow-400
               focus:ring-2
               focus:ring-yellow-400/30
@@ -200,8 +201,9 @@ export default function Contact() {
               text-sm
               sm:text-base
               outline-none
-              transition-all
+              transition-[border-color,box-shadow]
               duration-300
+              hover:border-white/30
               focus:border-yellow-400
               focus:ring-2
               focus:ring-yellow-400/30
@@ -227,8 +229,9 @@ export default function Contact() {
               text-sm
               sm:text-base
               outline-none
-              transition-all
+              transition-[border-color,box-shadow]
               duration-300
+              hover:border-white/30
               focus:border-yellow-400
               focus:ring-2
               focus:ring-yellow-400/30
@@ -255,8 +258,9 @@ export default function Contact() {
               sm:text-base
               outline-none
               resize-none
-              transition-all
+              transition-[border-color,box-shadow]
               duration-300
+              hover:border-white/30
               focus:border-yellow-400
               focus:ring-2
               focus:ring-yellow-400/30
@@ -269,21 +273,24 @@ export default function Contact() {
               type="submit"
               disabled={loading}
               className="
-              w-full
-              py-4
-              rounded-2xl
-              bg-gray-400
-              text-black
-              font-bold
-              text-sm
-              sm:text-base
-              transition-all
-              duration-300
-              hover:scale-[1.01]
-              hover:bg-white
-              disabled:opacity-50
-              disabled:cursor-not-allowed
-            "
+              relative
+overflow-hidden
+group/btn
+w-full
+py-4
+rounded-2xl
+bg-gray-400
+text-black
+font-bold
+text-sm
+sm:text-base
+transition-[background-color,transform]
+duration-300
+hover:scale-[1.01]
+hover:bg-white
+disabled:opacity-50
+disabled:cursor-not-allowed
+          "
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {loading ? (

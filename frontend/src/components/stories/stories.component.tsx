@@ -328,7 +328,7 @@ const StoriesComponent = () => {
           className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
             selectedLength === length
               ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/30"
-              : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-gray-200"
+              : "bg-gray-200 text-slate-700 hover:bg-gray-300 dark:bg-white/10 dark:text-gray-400 dark:hover:bg-white/20 dark:hover:text-gray-200"
           }`}
         >
           {length.charAt(0).toUpperCase() + length.slice(1)}
@@ -555,7 +555,7 @@ const StoriesComponent = () => {
         onPublishSuccess={handlePublishSuccess}
         isLoading={loading}
       />
-      <div className="absolute top-[-200px] left-[250px] w-[800px] h-[350px] bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
+      <div className="fixed top-[-200px] left-[250px] w-[800px] h-[350px] bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
 
       {showLimitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">

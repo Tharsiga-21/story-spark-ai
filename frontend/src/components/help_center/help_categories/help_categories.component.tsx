@@ -17,8 +17,9 @@ const HelpCategories: FC<HelpCategoriesProps> = ({ categories }) => {
       id="help-categories"
       className="scroll-mt-28 transition-colors duration-300"
     >
-      <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-300 mb-4">
+      {/* Section Header */}
+      <div className="mb-12 text-center sm:text-left">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-300 mb-4">
           <i className="fa-solid fa-layer-group"></i>
           <span className="text-sm font-semibold">HELP CATEGORIES</span>
         </div>
@@ -30,20 +31,10 @@ const HelpCategories: FC<HelpCategoriesProps> = ({ categories }) => {
         <p className="text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
           Browse support topics designed to help you quickly understand
           StorySparkAI features, workflows, and troubleshooting steps.
-      <div className="text-center mb-10">
-        <h2
-          id="categories-heading"
-
-          className="text-3xl font-extrabold text-gray-900 dark:text-gray-300 tracking-tight transition-colors duration-300"
-        >
-          Quick Help Categories
-        </h2>
-        <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium transition-colors duration-300">
-
-          Jump into the topic you need — from your first story to contributing code.
         </p>
       </div>
 
+      {/* Categories Content Matrix */}
       {categories.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/[0.03] p-12 text-center">
           <div className="w-20 h-20 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center mx-auto mb-5">
@@ -86,18 +77,17 @@ const HelpCategories: FC<HelpCategoriesProps> = ({ categories }) => {
             >
               {/* Glow effects */}
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
               <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
               <div className="relative z-10 p-7">
-                {/* Icon */}
+                {/* Icon Layout */}
                 <div
                   className="
                     w-16 h-16 rounded-2xl
                     bg-gradient-to-br from-blue-500/20 to-indigo-500/20
                     border border-blue-500/20
                     flex items-center justify-center
-                    text-2xl text-blue-300
+                    text-2xl text-blue-600 dark:text-blue-300
                     mb-6
                     group-hover:scale-110
                     transition-transform duration-300
@@ -106,7 +96,7 @@ const HelpCategories: FC<HelpCategoriesProps> = ({ categories }) => {
                   <i className={`fa-solid ${category.icon}`}></i>
                 </div>
 
-                {/* Content */}
+                {/* Content Elements */}
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-blue-500 dark:group-hover:text-blue-300 transition-colors">
                   {category.title}
                 </h3>
@@ -115,7 +105,7 @@ const HelpCategories: FC<HelpCategoriesProps> = ({ categories }) => {
                   {category.description}
                 </p>
 
-                {/* Bottom button */}
+                {/* Card Action Link */}
                 <div className="mt-6 flex items-center justify-between">
                   <span className="text-blue-600 dark:text-blue-300 text-sm font-semibold">
                     Learn More
@@ -139,7 +129,7 @@ const HelpCategories: FC<HelpCategoriesProps> = ({ categories }) => {
                 </div>
               </div>
 
-              {/* Top border highlight */}
+              {/* Top border ambient gradient highlight */}
               <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </motion.div>
           ))}

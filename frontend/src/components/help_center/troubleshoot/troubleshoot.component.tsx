@@ -33,17 +33,6 @@ const Troubleshoot: FC<TroubleshootProps> = ({ items }) => {
         <p className="text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
           Diagnose and resolve common StorySparkAI issues quickly with guided
           troubleshooting steps and recommended fixes.
-      <div className="text-center mb-10">
-        <h2
-          id="troubleshooting-heading"
-
-          className="text-3xl font-extrabold text-gray-900 dark:text-gray-300"
-        >
-          Troubleshooting
-        </h2>
-        <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
-
-          Diagnose and fix common setup and runtime issues.
         </p>
       </div>
 
@@ -87,14 +76,14 @@ const Troubleshoot: FC<TroubleshootProps> = ({ items }) => {
                 transition-all duration-300
               "
             >
-              {/* Glow */}
+              {/* Glow Accent */}
               <div className="absolute -top-10 -right-10 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-              {/* Top border */}
+              {/* Top Accent Line */}
               <div className="absolute top-0 left-0 h-[2px] w-full bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
               <div className="relative z-10 p-7">
-                {/* Header */}
+                {/* Item Details Header */}
                 <div className="flex items-start gap-5 mb-6">
                   {/* Icon */}
                   <div
@@ -123,7 +112,7 @@ const Troubleshoot: FC<TroubleshootProps> = ({ items }) => {
                   </div>
                 </div>
 
-                {/* Symptoms */}
+                {/* Symptoms section */}
                 <div className="mb-5">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-9 h-9 rounded-xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center text-red-500 dark:text-red-400">
@@ -142,7 +131,7 @@ const Troubleshoot: FC<TroubleshootProps> = ({ items }) => {
                   </div>
                 </div>
 
-                {/* Solution */}
+                {/* Solution section */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-500 dark:text-emerald-400">

@@ -7,7 +7,7 @@ import {
   setToLocalStorage,
 } from "../utils/local-storage";
 
-type AuthUserInfo = {
+export type AuthUserInfo = {
   email: string;
   userId: string;
   name: string;
@@ -18,15 +18,16 @@ type AuthUserInfo = {
   iat: number;
 };
 
-const buildUserInfo = (decodedData: AuthUserInfo): AuthUserInfo => ({
-  email: decodedData.email || "",
-  userId: decodedData.userId || "",
-  name: decodedData.name || "",
-  postsCount: decodedData.postsCount || 0,
-  role: decodedData.role || "guest",
-  subscriptionType: decodedData.subscriptionType || "free",
-  exp: decodedData.exp || 0,
-  iat: decodedData.iat || 0,
+// FIX: Changed decodedData type to 'any' or Partial to accept looser/undefined parameters safely from the JWT payload
+const buildUserInfo = (decodedData: any): AuthUserInfo => ({
+  email: decodedData?.email || "",
+  userId: decodedData?.userId || "",
+  name: decodedData?.name || "",
+  postsCount: decodedData?.postsCount || 0,
+  role: decodedData?.role || "guest",
+  subscriptionType: decodedData?.subscriptionType || "free",
+  exp: decodedData?.exp || 0,
+  iat: decodedData?.iat || 0,
 });
 
 const getValidDecodedToken = () => {
@@ -35,13 +36,22 @@ const getValidDecodedToken = () => {
   if (authToken) {
     try {
       const decodedData = decodedToken(authToken);
-          if (
-      typeof decodedData.exp === "number" &&
-      decodedData.exp <= Math.floor(Date.now() / 1000)
-    ) {
-      removeFromLocalStorage(AUTH_KEY);
-      return null;
-    }
+      
+      // Safety check to ensure decodedData exists before parsing properties
+      if (!decodedData) {
+        removeFromLocalStorage(AUTH_KEY);
+        return null;
+      }
+
+      if (
+        typeof decodedData.exp === "number" &&
+        decodedData.exp <= Math.floor(Date.now() / 1000)
+      ) {
+        removeFromLocalStorage(AUTH_KEY);
+        return null;
+      }
+      
+      // This will now compile cleanly without throwing a type mismatch error
       return buildUserInfo(decodedData);
     } catch (error) {
       console.error("Invalid auth token:", error);
@@ -59,6 +69,7 @@ export const storeUserInfo = ({ accessToken }: AccessToken) => {
 export const getUserInfo = (): AuthUserInfo | null => {
   return getValidDecodedToken();
 };
+
 export const isLoggedIn = () => {
   return !!getValidDecodedToken();
 };

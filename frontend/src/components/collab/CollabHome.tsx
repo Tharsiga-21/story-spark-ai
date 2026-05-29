@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { connectSocket, getSocketIo } from "../../socket/socket.oi";
+import { connectSocket } from "../../socket/socket.oi";
 import { getUserInfo, isLoggedIn } from "../../services/auth.service";
+import { io } from "socket.io-client"; // Imported to resolve namespace path mappings if needed
 
 export default function CollabHome() {
   const navigate = useNavigate();
@@ -23,10 +24,20 @@ export default function CollabHome() {
         setError(
           "Socket.IO connection failed. Please check VITE_SOCKET_URL in frontend/.env"
         );
+        setIsCreating(false);
         return;
       }
 
-      const collabSocket = socket.io.of("/collab");
+      // FIX: Establish connection directly to the namespace path.
+      // If your backend runs on a dynamic env value, replace the fallback string with import.meta.env.VITE_SOCKET_URL
+      const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+      const collabSocket = io(`${socketUrl}/collab`, {
+        transports: ["websocket"],
+        // pass existing auth parameters if your socket initialization requires them:
+        auth: {
+          token: localStorage.getItem("AUTH_KEY") 
+        }
+      });
 
       collabSocket.emit(
         "collab:create_room",

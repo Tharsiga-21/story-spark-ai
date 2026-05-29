@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getSocketIo, connectSocket } from "../../socket/socket.oi";
+import { connectSocket } from "../../socket/socket.oi";
 import { isLoggedIn, getUserInfo } from "../../services/auth.service";
+import { io, Socket } from "socket.io-client"; // Imported Socket type and io helper safely
 
 interface Participant {
   userId: string;
@@ -35,6 +36,9 @@ export default function CollabRoom() {
   const [error, setError] = useState<string | null>(null);
   const [newText, setNewText] = useState("");
   const user = getUserInfo();
+  
+  // FIX: Persistent reference holder for the custom workspace namespace connection
+  const collabSocketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -50,8 +54,14 @@ export default function CollabRoom() {
         return;
       }
 
-      // Connect to collab namespace
-      const collabSocket = socket.io.of("/collab");
+      // FIX: Establish dynamic or baseline safe namespace path target
+      const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+      const collabSocket = io(`${socketUrl}/collab`, {
+        transports: ["websocket"]
+      });
+      
+      // Save reference to be used by click triggers safely elsewhere
+      collabSocketRef.current = collabSocket;
 
       // Request room info
       collabSocket.emit("collab:get_room", { roomId }, (response: any) => {
@@ -87,6 +97,7 @@ export default function CollabRoom() {
       return () => {
         collabSocket.off("collab:room_updated", handleRoomUpdated);
         collabSocket.off("collab:story_updated", handleStoryUpdated);
+        collabSocket.disconnect(); // Clean connection handle loop safely
       };
     } catch (err) {
       console.error("Collab error:", err);
@@ -98,9 +109,9 @@ export default function CollabRoom() {
   const handleAddText = () => {
     if (!newText.trim() || !user) return;
 
-    const socket = getSocketIo();
-    if (socket) {
-      socket.io.of("/collab").emit("collab:add_text", {
+    // FIX: Using persistent local ref to target the connection directly
+    if (collabSocketRef.current) {
+      collabSocketRef.current.emit("collab:add_text", {
         roomId,
         userId: user.userId,
         text: newText,
@@ -110,9 +121,9 @@ export default function CollabRoom() {
   };
 
   const handleAIContinue = () => {
-    const socket = getSocketIo();
-    if (socket) {
-      socket.io.of("/collab").emit("collab:ai_continue", { roomId });
+    // FIX: Using persistent local ref to target the connection directly
+    if (collabSocketRef.current) {
+      collabSocketRef.current.emit("collab:ai_continue", { roomId });
     }
   };
 
@@ -183,7 +194,7 @@ export default function CollabRoom() {
                   type="text"
                   value={newText}
                   onChange={(e) => setNewText(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleAddText()}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddText()}
                   placeholder="Add your story text..."
                   className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-white/10 rounded-lg focus:outline-none focus:border-indigo-500"
                 />

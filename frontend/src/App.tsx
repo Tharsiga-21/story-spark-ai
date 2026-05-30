@@ -45,6 +45,7 @@ import ReportBug from "./components/report-bug/ReportBug";
 import AnalyticsPage from "./components/dashboard/analytics/analytics.page";
 import StoryWorkspace from "./components/story/StoryWorkspace";
 import StoriesComponent from "./components/stories/stories.component";
+import Leaderboard from "./pages/Leaderboard";
 
 type ProtectedRouteProps = {
   allowedRoles: string[];
@@ -93,6 +94,7 @@ const router = createBrowserRouter([
       { path: "help-center", element: <HelpCenterComponent /> },
       { path: "guidelines", element: <GuidelinesComponent /> },
       { path: "contributors", element: <ContributorsComponent /> },
+      { path: "leaderboard", element: <Leaderboard /> },
       { path: "report-bug", element: <ReportBug /> },
       {
         element: <ProtectedRoute allowedRoles={ALL_ROLES} />,

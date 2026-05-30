@@ -9,6 +9,7 @@ import globalErrorHandler from "./app/middleware/global.error.handler";
 import { User } from "./app/modules/user/user.model";
 import { NewsletterSubscriber } from "./app/modules/newsletter/newsletter.model";
 import storyRoutes from "./routes/story.routes";
+import leaderboardRoute from "./routes/leaderboard.route";
 const app: Application = express();
 
 app.set("trust proxy", 1); // Trust first proxy to securely read req.ip
@@ -46,6 +47,7 @@ app.use(cookieParser() as any);
 
 // Routes
 app.use("/api/v1", Routers);
+app.use("/api/v1/leaderboard", leaderboardRoute);
 
 // Global 404 Fallback Handler
 app.use((req: Request, res: Response, next: NextFunction) => {

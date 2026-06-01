@@ -22,10 +22,22 @@ import SimpleProtectedRoute from './components/ProtectedRoute';
 import PublishedStoriesComponent from "./components/dashboard/posts/published_stories.component";
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import ScrollToTop from "./components/ScrollToTop";
-
 import HeroSectionComponent from "./components/hero/hero_section.component";
 import HomeComponent from "./components/home/home.component";
 import LoginComponent from "./components/login/login.component";
+import SignUpComponent from "./components/signup/signup.component";
+import ForgotPasswordComponent from "./components/login/forgot_password.component";
+import DashboardComponent from "./components/dashboard/dashboard.component";
+import RootLayout from "./components/layout/root_layout.component";
+import DashboardLayout from "./components/dashboard/dashboard_layout.component";
+import SettingComponent from "./components/dashboard/settings/settings.component";
+import WriterApplicationComponent from "./components/dashboard/writers/writer_application.component";
+import UserComponent from "./components/dashboard/users/user.component";
+import PricingComponent from "./components/pricing/pricing.component";
+import ExploreComponent from "./components/post/post.component";
+import PostDetailsComponent from "./components/post/post.details.component";
+import BookmarksComponent from "./components/post/bookmarks.component";
+import { getUserInfo } from "./services/auth.service";
 import NotFoundComponent from "./components/not-found.component";
 import PaymentComponent from "./components/home/pricing/payment.component";
 import PostDetailsComponent from "./components/post/post.details.component";
@@ -47,14 +59,10 @@ import HelpCenterComponent from "./components/help_center/help_center.component"
 import Contact from "./components/contactus/contactus";
 import GuidelinesComponent from "./components/footer/guidelines.tsx";
 import ContributorsComponent from "./components/footer/contributors";
-import Terms from "./components/footer/terms.tsx";
-import ExploreComponent from "./components/post/post.component";
-import CommunityComponent from "./components/community/community.component";
-import EmailValidationComponent from "./components/email_validation/email.validation.component";
-import DashboardComponent from "./components/dashboard/dashboard.component";
-import WriterApplicationComponent from "./components/dashboard/writers/writer_application.component";
-import UserComponent from "./components/dashboard/users/user.component";
-import ForgotPasswordComponent from "./components/login/forgot_password.component";
+import ReportBug from "./components/report-bug/ReportBug";
+import AnalyticsPage from "./components/dashboard/analytics/analytics.page";
+import StoryWorkspace from "./components/story/StoryWorkspace";
+
 
 type ProtectedRouteProps = {
   allowedRoles: string[];

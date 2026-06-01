@@ -36,6 +36,7 @@ const buildUserInfo = (decodedData: any): AuthUserInfo => ({
   subscriptionType: decodedData?.subscriptionType || "free",
   exp: decodedData?.exp || 0,
   iat: decodedData?.iat || 0,
+  avatar: decodedData?.avatar || "",
 });
 
 const getValidDecodedToken = () => {
@@ -45,7 +46,6 @@ const getValidDecodedToken = () => {
     try {
       const decodedData = decodedToken(authToken);
 
-      // Safety check to ensure decodedData exists before parsing properties
       if (!decodedData) {
         removeFromLocalStorage(AUTH_KEY);
         return null;

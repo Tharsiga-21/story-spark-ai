@@ -12,6 +12,7 @@ import {
 } from "../../redux/apis/storyVersion.api";
 import RelatedStoriesComponent from "./related.stories.view.component";
 import PostCommentComponent from "./post.comment.component";
+import { ComparisonMode } from "../story-comparison";
 
 import LoadingAnimation from "../loading/loading.component";
 import SSProfile from "../ui-component/ss-profile/ss-profile";
@@ -20,6 +21,7 @@ import BookmarkButton from "../BookmarkButton";
 import AudioPlayer from "../AudioPlayer";
 
 import { formatDateShort } from "../../utils/time-formate";
+import { formatReadingStats } from "../../utils/story-utils";
 import { getUserInfo } from "../../services/auth.service";
 
 import { useToggleReactionMutation } from "../../redux/apis/reaction.api";
@@ -104,6 +106,7 @@ const PostDetailsComponent = () => {
   const [showTimeline, setShowTimeline] = useState(false);
   const [showTree, setShowTree] = useState(false);
   const [selectedVersionForBranch, setSelectedVersionForBranch] = useState<string | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
 
   const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
   const { data: versions, isLoading: isLoadingVersions } = useGetVersionsByStoryIdQuery(id || "", {
@@ -341,6 +344,12 @@ const PostDetailsComponent = () => {
                 >
                   ✨ Story Timeline & History
                 </button>
+                <button
+                  onClick={() => setShowComparison(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 text-sm bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:opacity-90 rounded-lg transition-all active:scale-95 cursor-pointer font-semibold shadow-md"
+                >
+                  📊 Compare Variations
+                </button>
               </div>
             )}
 
@@ -390,6 +399,9 @@ const PostDetailsComponent = () => {
                   <div className="flex gap-2 mb-6">
                     <span className="inline-flex items-center rounded-full bg-blue-950/60 text-blue-300 border border-blue-700/50 py-1 px-3 text-xs font-semibold">
                       🌐 {post.language}
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-slate-800/60 text-slate-400 border border-slate-700/50 py-1 px-3 text-xs font-semibold">
+                      📖 {formatReadingStats(post.content)}
                     </span>
                   </div>
                 )}

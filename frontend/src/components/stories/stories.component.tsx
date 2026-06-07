@@ -626,6 +626,7 @@ useEffect(() => {
   );
   const [showLimitModal, setShowLimitModal] = useState<boolean>(false);
   const [isRecentPromptsOpen, setIsRecentPromptsOpen] = useState<boolean>(false);
+  const [isHighLatency, setIsHighLatency] = useState<boolean>(false);
   const { recentPrompts, addPrompt, removePrompt, clearAll } = useRecentPrompts();
   
   const text = UI_TEXT[selectedLanguage] ?? UI_TEXT.English;
@@ -812,8 +813,10 @@ useEffect(() => {
 
     isGenerationInProgressRef.current = true;
     setLoading(true);
+    setIsHighLatency(false);
 
     let timeoutId: NodeJS.Timeout | null = null;
+    let latencyTimeoutId: NodeJS.Timeout | null = null;
 
     try {
       // 60-second client-side request timeout safeguard
@@ -823,6 +826,13 @@ useEffect(() => {
           handleCancelGeneration(true);
         }
       }, 60000);
+
+      // 10-second high latency warning (for fallback/backoff cases)
+      latencyTimeoutId = setTimeout(() => {
+        if (isGenerationInProgressRef.current) {
+          setIsHighLatency(true);
+        }
+      }, 10000);
 
       const payload = {
         prompt: selectedGenre
@@ -884,9 +894,13 @@ useEffect(() => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
+      if (latencyTimeoutId) {
+        clearTimeout(latencyTimeoutId);
+      }
       activeGenerationRef.current = null;
       isGenerationInProgressRef.current = false;
       setLoading(false);
+      setIsHighLatency(false);
     }
   };
 
@@ -1884,7 +1898,7 @@ useEffect(() => {
         </div>
       )}
 
-      {loading && <StoryGeneratingAnimation onCancel={handleCancelGeneration} />}
+      {loading && <StoryGeneratingAnimation onCancel={handleCancelGeneration} isHighLatency={isHighLatency} />}
 
       {/* Search UI */}
       {stories.length > 0 && (

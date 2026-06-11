@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo, Suspense } from "react";
 import DOMPurify from "dompurify";
-import { getShortenedText, ITopicData, topicsData, getWordCount, SELECTED_TOPIC_CLASSES } from "./stories.utils";
+import { getShortenedText, ITopicData, topicsData, getWordCount, SELECTED_TOPIC_CLASSES, TEMPLATE_STORY_UUID } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useAntiGravityScroll } from "../../hooks/useAntiGravityScroll";
 import { useCreatePostMutation, useDeletePostMutation } from "../../redux/apis/post.api";
@@ -143,6 +143,10 @@ const StoryCoverImage: React.FC<StoryCoverImageProps> = ({
       </div>
     </div>
   );
+};
+
+export const isTemplateStory = (story: IStories | null): boolean => {
+  return story?.uuid === TEMPLATE_STORY_UUID;
 };
 
 export interface IStories {
@@ -559,7 +563,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   useEffect(() => {
     const autoSaveStory = async () => {
       if (!isLogin || !selectedStory) return;
-      if (selectedStory.uuid === "test-1") return;
+      if (isTemplateStory(selectedStory)) return;
       if (selectedStory.content === lastSavedContentRef.current) return;
       if (hasSavedSessionRef.current) return;
       if (isSavingRef.current) return;

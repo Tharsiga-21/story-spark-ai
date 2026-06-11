@@ -29,18 +29,50 @@ const toggleReaction = async (
   if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
+  const existingReaction = await Reaction.findOne({
+    postId: new Types.ObjectId(postId),
+    userId: user._id,
+  });
 
- main
+  if (existingReaction) {
+    if (existingReaction.type === type) {
+      // Remove reaction if it's the same type
+      await Reaction.deleteOne({ _id: existingReaction._id });
+      const updatedPost = await Post.findOneAndUpdate(
+        { _id: postId },
+        { 
+          $pull: { reactions: existingReaction._id },
+          $inc: { likesCount: -1 } 
+        },
+        { new: true }
+      );
+      return { message: "Reaction removed", reacted: false, likesCount: updatedPost?.likesCount || 0 };
+    } else {
+      // Update reaction type
+      existingReaction.type = type;
+      await existingReaction.save();
+      const updatedPost = await Post.findById(postId);
+      return { message: "Reaction updated", reacted: true, reaction: existingReaction, likesCount: updatedPost?.likesCount || 0 };
+    }
+  } else {
+    // Add new reaction
     const newReaction = await Reaction.create({
       postId: new Types.ObjectId(postId),
       userId: user._id,
       type: type,
     });
- main
-    };
+    
+    const updatedPost = await Post.findOneAndUpdate(
+      { _id: postId },
+      { 
+        $push: { reactions: newReaction._id },
+        $inc: { likesCount: 1 } 
+      },
+      { new: true }
+    );
+    return { message: "Reaction added", reacted: true, reaction: newReaction, likesCount: updatedPost?.likesCount || 0 };
   }
 };
-
 export const ReactionService = {
   toggleReaction,
 };

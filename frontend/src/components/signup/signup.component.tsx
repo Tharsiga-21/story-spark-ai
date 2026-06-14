@@ -182,6 +182,7 @@ const SignUpComponent = () => {
       if (res?.data) {
         const { expiresAt } = res.data;
         setExpiredAt(new Date(expiresAt).getTime());
+        setValue("otp", "");
         toast.success("OTP resent to your email");
         setCooldown(60);
       }

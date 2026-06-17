@@ -187,8 +187,7 @@ const WriterFeedbackComponent = () => {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white/80 p-6 text-center backdrop-blur dark:bg-slate-900/50">
-            <h3 className="text-3xl font-bold text-yellow-600 dark:text-yellow-500">4.9★</h3>
+transition-all duration-300 hover:scale-105 hover:-translate-y-2 hover:shadow-xl cursor-pointer            <h3 className="text-3xl font-bold text-yellow-600 dark:text-yellow-500">4.9★</h3>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
               Average Rating
             </p>

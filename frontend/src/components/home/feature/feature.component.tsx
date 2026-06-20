@@ -8,6 +8,8 @@ import BookmarkButton from "../../BookmarkButton";
 import React, { useState } from "react";
 import { FaLinkedin, FaEnvelope, FaLink } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import ImageFallback from "../../ImageFallback";
+import { SkeletonGrid } from "../../cards/SkeletonCard";
 
 const FeatureComponent = () => {
   const { data, isLoading, isError } = useGetFeaturedListsQuery(undefined);
@@ -20,11 +22,7 @@ const FeatureComponent = () => {
     return Math.max(1, Math.ceil(words / 200));
   };
 
-  const handleCopyLink = (
-    e: React.MouseEvent,
-    postId: string,
-    postUrl: string,
-  ) => {
+  const handleCopyLink = (e: React.MouseEvent, postId: string, postUrl: string) => {
     e.stopPropagation();
     navigator.clipboard.writeText(postUrl).then(() => {
       setCopiedId(postId);
@@ -33,7 +31,14 @@ const FeatureComponent = () => {
   };
 
   if (isLoading) {
-    return <LoadingAnimation />;
+    return (
+      <section className="w-full box-border mb-12">
+        <h2 className="mb-6 text-xl sm:text-2xl font-extrabold tracking-tight select-none text-slate-900 dark:text-slate-100">
+          Featured Posts
+        </h2>
+        <SkeletonGrid count={4} variant="home-featured" />
+      </section>
+    );
   }
 
   if (isError) {
@@ -56,7 +61,7 @@ const FeatureComponent = () => {
       </h2>
 
       {posts.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
           {posts.map((post: Post) => {
             const postUrl = `${window.location.origin}/post/${post._id}`;
 
@@ -64,11 +69,11 @@ const FeatureComponent = () => {
               <div
                 key={post._id}
                 onClick={() => navigate(`/post/${post._id}`)}
-                className="motion-card h-full bg-blue-500/10 rounded-2xl sm:rounded-3xl shadow-sm overflow-hidden border border-slate-700/40 cursor-pointer hover:bg-blue-500/20 hover:border-blue-400/30 flex flex-col group box-border w-full"
+                className="motion-card h-full min-w-[85vw] snap-start bg-blue-500/10 rounded-2xl sm:rounded-3xl shadow-sm overflow-hidden border border-slate-700/40 cursor-pointer hover:bg-blue-500/20 hover:border-blue-400/30 flex flex-col group box-border w-full md:min-w-0"
               >
                 {post.imageURL && (
                   <div className="relative overflow-hidden h-48 w-full">
-                    <img
+                    <ImageFallback
                       className="motion-image h-full w-full object-cover"
                       src={post.imageURL}
                       alt={post.title || "Featured Post"}
@@ -97,8 +102,7 @@ const FeatureComponent = () => {
                             </span>
 
                             <p className="text-xs text-purple-400 font-medium flex items-center gap-1">
-                              <i className="fa-regular fa-clock"></i>{" "}
-                              {calculateReadingTime(post.content)} min read
+                              <i className="fa-solid fa-clock"></i> {calculateReadingTime(post.content)} min read
                             </p>
                           </div>
                         </div>
@@ -115,7 +119,7 @@ const FeatureComponent = () => {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors tracking-tight line-clamp-1">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors tracking-tight line-clamp-2 break-words overflow-hidden text-ellipsis">
                       {post.title}
                     </h3>
 
@@ -131,17 +135,16 @@ const FeatureComponent = () => {
                         {post.likesCount ?? 0}
                       </span>
                       <span className="flex items-center">
-                        <i
-                          className="far fa-comment mr-1"
-                          aria-hidden="true"
-                        ></i>
+                        <i className="far fa-comment mr-1" aria-hidden="true"></i>
                         {post.commentsCount ?? 0}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-4 text-slate-500 dark:text-gray-400">
                       <a
-                        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title || "")}`}
+                        href={`https://x.com/intent/tweet?url=${encodeURIComponent(
+                          postUrl
+                        )}&text=${encodeURIComponent(post.title || "")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Share on X"
@@ -174,14 +177,10 @@ const FeatureComponent = () => {
                       <button
                         type="button"
                         onClick={(e) => handleCopyLink(e, post._id, postUrl)}
-                        title={
-                          copiedId === post._id ? "Link copied!" : "Copy link"
-                        }
+                        title={copiedId === post._id ? "Link copied!" : "Copy link"}
                         aria-label="Copy post link"
                         className={`transition-colors duration-200 focus:outline-none ${
-                          copiedId === post._id
-                            ? "text-green-400"
-                            : "hover:text-blue-400"
+                          copiedId === post._id ? "text-green-400" : "hover:text-blue-400"
                         }`}
                       >
                         <FaLink size={16} />
@@ -196,10 +195,7 @@ const FeatureComponent = () => {
       ) : (
         <div className="rounded-3xl border border-dashed border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] p-12 text-center box-border max-w-full">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mx-auto mb-5 border border-slate-200/60 dark:border-white/5">
-            <i
-              className="fa-solid fa-star text-slate-400 dark:text-slate-500 text-xl"
-              aria-hidden="true"
-            ></i>
+            <i className="fa-solid fa-star text-slate-400 dark:text-slate-500 text-xl" aria-hidden="true"></i>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
             No featured nodes are highlighted inside the stream right now.

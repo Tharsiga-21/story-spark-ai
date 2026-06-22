@@ -6,6 +6,7 @@ import { QuillBinding } from 'y-quill';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import { io, Socket } from 'socket.io-client';
 import { resolveSocketUrl } from '../../helpers/socket-url';
+import { Awareness } from 'y-protocols/awareness';
 
 interface CollabEditorProps {
   storyId: string;
@@ -54,7 +55,7 @@ export default function CollabEditor({ storyId, userId, username, userColor }: C
     const binding = new QuillBinding(ytext, quill);
 
     // Setup awareness for presence
-    const Awareness = require('y-protocols/awareness').Awareness;
+  
     const awareness = new Awareness(ydoc);
     awarenessRef.current = awareness;
     awareness.setLocalStateField('user', {

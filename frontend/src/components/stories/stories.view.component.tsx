@@ -270,7 +270,7 @@ const StoryRemixModal = React.lazy(() => import("../remix/StoryRemix"));
 const StoryWorldMapModal = React.lazy(() => import("../story-map/StoryWorldMap"));
 
 export const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({ posts, currentPostId }) => {
-  const navigate = useNavigate();  // <--- ADD THIS LINE
+  const navigate = useNavigate();
   const filteredPosts = posts.filter((post) => post._id !== currentPostId);
 
   return (
@@ -294,6 +294,7 @@ export const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = 
     </div>
   );
 };
+
 // ─── Main Component ─────────────────────────────────────────────────────────
 const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   stories,
@@ -305,7 +306,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const location = useLocation();
   const dispatch = useDispatch();
   const audioPlayerRef = useRef<AudioPlayerHandle>(null);
-  const { setError, clearError } = useApiError();
+  const { clearError } = useApiError();  // ✅ FIXED: Removed setError
 
   const storyScrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -358,7 +359,8 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   
   const [narrationWordIndex, setNarrationWordIndex] = useState<number>(0);
   const [narrationState, setNarrationState] = useState<NarrationPlaybackState>("idle");
-  const [readingStreak, setReadingStreak] = useState<number>(0);
+
+  // ✅ FIXED: Removed readingStreak state
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -475,27 +477,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     savedPostIdRef.current = null;
   }, [stories, dispatch]);
 
-  useEffect(() => {
-    const today = new Date().toDateString();
-    const lastReadDate = localStorage.getItem("lastReadDate");
-    const streak = Number(localStorage.getItem("readingStreak") || "0");
-
-    if (lastReadDate !== today) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-
-      let newStreak = 1;
-      if (lastReadDate === yesterday.toDateString()) {
-        newStreak = streak + 1;
-      }
-
-      localStorage.setItem("readingStreak", String(newStreak));
-      localStorage.setItem("lastReadDate", today);
-      setReadingStreak(newStreak);
-    } else {
-      setReadingStreak(streak);
-    }
-  }, [selectedStory]);
+  // ✅ FIXED: Removed readingStreak useEffect
 
   useEffect(() => {
     const autoSaveStory = async () => {
@@ -593,215 +575,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     }
   };
 
-  const handleExportPDF = async () => {
-    if (!selectedStory) {
-      toast.error("No story available to export.");
-      return;
-    }
-
-    const toastId = toast.loading("Preparing your premium PDF...");
-    try {
-      const loadImageWithTimeout = (src: string, timeoutMs: number = 3000): Promise<HTMLImageElement> => {
-        return new Promise((resolve, reject) => {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          const timeout = setTimeout(() => {
-            img.src = "";
-            reject(new Error(`Timeout loading image: ${src}`));
-          }, timeoutMs);
-
-          img.onload = () => {
-            clearTimeout(timeout);
-            resolve(img);
-          };
-          img.onerror = (e) => {
-            clearTimeout(timeout);
-            reject(e);
-          };
-          img.src = src;
-        });
-      };
-
-      let logoImg: HTMLImageElement | null = null;
-      let storyImg: HTMLImageElement | null = null;
-
-      try {
-        logoImg = await loadImageWithTimeout(logo);
-      } catch (err) {
-        console.warn("Failed to load StorySparkAI logo for PDF", err);
-      }
-
-      if (selectedStory.imageURL) {
-        try {
-          storyImg = await loadImageWithTimeout(selectedStory.imageURL);
-        } catch (err) {
-          console.warn("Failed to load story banner image for PDF", err);
-        }
-      }
-
-      const doc = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
-      const title = selectedStory.title || "Untitled Story";
-      const content = selectedStory.content || "";
-      const tag = (selectedStory.tag || "STORY").toUpperCase();
-
-      const leftMargin = 20;
-      const rightMargin = 20;
-      const topMargin = 20;
-      const bottomMargin = 20;
-      const printableWidth = 210 - leftMargin - rightMargin;
-      const maxY = 297 - bottomMargin - 10;
-
-      let yCursor = topMargin;
-
-      if (logoImg) {
-        const logoHeight = 8;
-        const logoWidth = (logoImg.width / logoImg.height) * logoHeight;
-        doc.addImage(logoImg, "PNG", leftMargin, yCursor, logoWidth, logoHeight);
-      } else {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.setTextColor(99, 102, 241);
-        doc.text("StorySparkAI", leftMargin, yCursor + 6);
-      }
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-      doc.setTextColor(148, 163, 184);
-      doc.text("PREMIUM AI GENERATED STORY", 190, yCursor + 5, { align: "right" });
-
-      yCursor += 10;
-      doc.setDrawColor(99, 102, 241);
-      doc.setLineWidth(0.5);
-      doc.line(leftMargin, yCursor, 190, yCursor);
-
-      yCursor += 8;
-
-      if (storyImg) {
-        const bannerHeight = 55;
-        doc.addImage(storyImg, "JPEG", leftMargin, yCursor, printableWidth, bannerHeight);
-        yCursor += bannerHeight + 8;
-      }
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.setTextColor(30, 41, 59);
-      const splitTitle = doc.splitTextToSize(title, printableWidth);
-      splitTitle.forEach((line: string) => {
-        doc.text(line, leftMargin, yCursor);
-        yCursor += 9;
-      });
-
-      yCursor += 1;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
-      doc.setTextColor(100, 116, 139);
-      const formattedDate = new Date().toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      doc.text(`Generated on ${formattedDate}`, leftMargin, yCursor);
-
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.5);
-      const tagWidth = doc.getTextWidth(tag);
-      const chipWidth = tagWidth + 5;
-      const chipHeight = 5;
-      const chipX = 190 - chipWidth;
-      const chipY = yCursor - 3.8;
-
-      doc.setFillColor(99, 102, 241);
-      doc.roundedRect(chipX, chipY, chipWidth, chipHeight, 1, 1, "F");
-
-      doc.setTextColor(255, 255, 255);
-      doc.text(tag, chipX + 2.5, chipY + 3.5);
-
-      yCursor += 4.5;
-
-      doc.setDrawColor(226, 232, 240);
-      doc.setLineWidth(0.2);
-      doc.line(leftMargin, yCursor, 190, yCursor);
-
-      yCursor += 10;
-
-      const paragraphs = content.split(/\n+/);
-      const lineHeight = 6.5;
-      const paragraphSpacing = 4.5;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.setTextColor(30, 41, 59);
-
-      paragraphs.forEach((para: string, pIdx: number) => {
-        const cleanPara = para.trim();
-        if (!cleanPara) return;
-
-        const lines = doc.splitTextToSize(cleanPara, printableWidth);
-        lines.forEach((line: string) => {
-          if (yCursor > maxY) {
-            doc.addPage();
-            yCursor = 30;
-          }
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(11);
-          doc.setTextColor(30, 41, 59);
-          doc.text(line, leftMargin, yCursor);
-          yCursor += lineHeight;
-        });
-
-        if (pIdx < paragraphs.length - 1) {
-          yCursor += paragraphSpacing;
-        }
-      });
-
-      const totalPages = doc.getNumberOfPages();
-      for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-
-        doc.setDrawColor(241, 245, 249);
-        doc.setLineWidth(0.25);
-        doc.line(leftMargin, 280, 190, 280);
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor(100, 116, 139);
-        doc.text("Generated with StorySparkAI", leftMargin, 285);
-        doc.text(`Page ${i} of ${totalPages}`, 190, 285, { align: "right" });
-
-        if (i > 1) {
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(8);
-          doc.setTextColor(99, 102, 241);
-          doc.text("StorySparkAI", leftMargin, 14);
-
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(8);
-          doc.setTextColor(148, 163, 184);
-          const headerTitle = title.length > 50 ? title.substring(0, 50) + "..." : title;
-          doc.text(headerTitle, 190, 14, { align: "right" });
-
-          doc.setDrawColor(241, 245, 249);
-          doc.setLineWidth(0.2);
-          doc.line(leftMargin, 17, 190, 17);
-        }
-      }
-
-      const safeTitle = title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
-      doc.save(`${safeTitle}.pdf`);
-      toast.dismiss(toastId);
-      toast.success("Premium PDF downloaded!");
-    } catch (error) {
-      console.error(error);
-      toast.dismiss(toastId);
-      toast.error("Failed to export PDF.");
-    }
-  };
+  // ✅ FIXED: DELETED handleExportPDF function entirely
 
   const handleExportMarkdown = () => {
     if (!selectedStory) {
@@ -816,12 +590,11 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
       const authorName = isLogin && profile?.name ? profile.name : "Anonymous";
       const isoDate = new Date().toISOString().split("T")[0];
 
-     // Helper function to escape both backslashes and quotes
-const escapeMarkdown = (str: string) => {
-  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-};
+      const escapeMarkdown = (str: string) => {
+        return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      };
 
-const markdownContent = `---
+      const markdownContent = `---
 title: "${escapeMarkdown(title)}"
 tag: "${escapeMarkdown(tag)}"
 author: "${escapeMarkdown(authorName)}"
@@ -905,36 +678,7 @@ ${content}
     }
   };
 
-  const handleGenerateStoryVisuals = async () => {
-    if (!selectedStory) {
-      toast.error("No story available. Please generate a story first.");
-      return;
-    }
-
-    const toastId = toast.loading("Generating visuals...");
-    try {
-      const res = await generateStoryVisuals({
-        title: selectedStory.title,
-        content: selectedStory.content,
-        genre: selectedStory.genre,
-        language: selectedStory.language,
-      }).unwrap();
-
-      if (res?.data?.scenes?.length) {
-        setStoryboardScenes(res.data.scenes);
-        setStoryboardStyleGuide(res.data.styleGuide);
-        setShowStoryVisualizer(true);
-        toast.success("Storyboard visuals generated successfully!");
-      } else {
-        toast.error("No storyboard scenes were returned.");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to generate visuals. Please try again.");
-    } finally {
-      toast.dismiss(toastId);
-    }
-  };
+  // ✅ FIXED: DELETED handleGenerateStoryVisuals function entirely
 
   const handleGenerateAlternateEndings = async () => {
     if (!selectedStory) return;
@@ -1553,7 +1297,7 @@ ${content}
             content: selectedStory.content,
             language: selectedStory.language ?? "English",
           }}
-          onClose={() => setShowContinueModal(false)}
+          onClose={() =>setShowContinueModal(false)}
         />
       )}
 

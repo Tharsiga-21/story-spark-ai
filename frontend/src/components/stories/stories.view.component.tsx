@@ -27,6 +27,7 @@ import StoryEndingGenerator from "./StoryEndingGenerator";
 import StoryImprovementSuggestions from "./StoryImprovementSuggestions";
 import StoryRecommendations from "./StoryRecommendations";
 import StoryCollaboration from "./StoryCollaboration";
+import StoryVoiceNarrator from "./StoryVoiceNarrator";
 
 export interface IStories {
   uuid: string;
@@ -67,6 +68,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [showImprovementPanel, setShowImprovementPanel] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [showCollaboration, setShowCollaboration] = useState(false);
+  const [showNarrator, setShowNarrator] = useState(false);
 
   const [showWorldMap, setShowWorldMap] = useState<boolean>(false);
 
@@ -376,12 +378,34 @@ if (!stories || stories.length === 0) {
                       🌍 Translate
                     </button>
                     <button
+
+                      type="button"
+                      className="rounded-lg px-4 py-2 bg-orange-700 text-white font-semibold hover:bg-orange-600 transition-colors"
+                      onClick={() => setShowRecommendations(true)}
+                    >
+                      📚 Recommendations
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-lg px-4 py-2 bg-cyan-700 text-white font-semibold cursor-pointer hover:bg-cyan-600 transition-colors"
+                      onClick={() => setShowCollaboration(!showCollaboration)}
+                    >
+                      🤝 Collaborate
+                    </button>
+                    <button
+                    type="button"
+                    className="rounded-lg px-4 py-2 bg-orange-700 text-white font-semibold cursor-pointer hover:bg-orange-600 transition-colors"
+                    onClick={() => setShowNarrator(!showNarrator)}
+                  >
+                    🎧 Narrate
+                  </button>
   type="button"
   className="rounded-lg px-4 py-2 bg-green-700 text-white font-semibold hover:bg-green-600 transition-colors"
   onClick={() => setShowWorldMap(true)}
 >
   🗺️ World Map
 </button>
+
                   </>
                 )}
                 <button

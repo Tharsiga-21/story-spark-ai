@@ -6,6 +6,7 @@ import { ReviewValidator } from "../app/modules/review/review.validation";
 import validateRequest from "../app/middleware/validate.request";
 import auth from "../app/middleware/auth.middleware";
 import checkRequestLimit from "../app/middleware/check.request.limit";
+import { enforceQuota } from "../app/middleware/enforceQuota.middleware";
 import storyGenerationRateLimiter from "../app/middleware/story.rate-limiter";
 import { ENUM_USER_ROLE } from "../enums/user";
 import catchAsync from "../shared/catch_async";
@@ -30,7 +31,7 @@ router.post(
     ENUM_USER_ROLE.SUPER_ADMIN
   ),
   storyGenerationRateLimiter,
-  checkRequestLimit(),
+  enforceQuota("story_continue"),
   piiScrubberMiddleware,
   validateRequest(AIModelValidator.aiStoryContinuation),
   catchAsync(async (req: Request, res: Response) => {
@@ -71,7 +72,7 @@ router.post(
     ENUM_USER_ROLE.SUPER_ADMIN
   ),
   storyGenerationRateLimiter,
-  checkRequestLimit(),
+  enforceQuota("story_continue"),
   piiScrubberMiddleware,
   validateRequest(AIModelValidator.aiStoryContinuation),
   catchAsync(async (req: Request, res: Response) => {
@@ -124,7 +125,7 @@ router.post(
     ENUM_USER_ROLE.SUPER_ADMIN
   ),
   storyGenerationRateLimiter,
-  checkRequestLimit(),
+  enforceQuota("story_generate"),
   catchAsync(async (req: Request, res: Response) => {
     const { prompt, provider, options } = req.body;
     const guard = res.locals.quotaRefundGuard;

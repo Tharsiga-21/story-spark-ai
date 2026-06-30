@@ -182,12 +182,25 @@ export const generateStoryboardImage = async (
 ): Promise<string | null> => {
   const provider = getProvider();
 
-  if (!provider) {
-    return null;
-  }
-
   if (provider === "openai") {
     return generateWithOpenAI(prompt, signal);
+  }
+
+  if (provider === "google" || provider === "gemini") {
+    return generateWithGoogle(prompt, signal);
+  }
+
+  // Fallback chain when provider is unset
+  if (!provider) {
+    const hasOpenAI = getApiKey() !== "";
+    if (hasOpenAI) {
+      return generateWithOpenAI(prompt, signal);
+    }
+
+    const hasGoogle = getGoogleApiKey() !== "";
+    if (hasGoogle) {
+      return generateWithGoogle(prompt, signal);
+    }
   }
 
   return null;

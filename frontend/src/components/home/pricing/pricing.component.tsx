@@ -1,11 +1,312 @@
-import React from "react";
-import PricingComponent from "./pricing.component";
+﻿import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Check, Sparkles, Zap, Crown, ArrowRight } from "lucide-react";
 
-const PricingMainComponent = () => {
+gsap.registerPlugin(ScrollTrigger);
+
+/* ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ Plan Data ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+const pricingPlans = [
+  {
+    title: "Free",
+    icon: <Sparkles size={22} />,
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    features: [
+      "Basic AI writing assistance",
+      "5 stories per month",
+      "Community access",
+      "Standard templates",
+    ],
+    buttonLabel: "Get Started Free",
+    highlight: false,
+    linkto: "/signup",
+    gradient: "from-slate-500 to-slate-400",
+    glowColor: "rgba(148,163,184,0.15)",
+    borderIdle: "rgba(148,163,184,0.12)",
+  },
+  {
+    title: "Pro",
+    icon: <Zap size={22} />,
+    monthlyPrice: 19,
+    yearlyPrice: 15,
+    features: [
+      "Advanced AI writing tools",
+      "Unlimited stories",
+      "Priority support",
+      "Analytics dashboard",
+      "Custom genres & emotions",
+    ],
+    buttonLabel: "Start Pro Trial",
+    highlight: true,
+    linkto: "/payment?plan=Pro&price=",
+    gradient: "from-indigo-500 via-blue-500 to-cyan-400",
+    glowColor: "rgba(99,102,241,0.25)",
+    borderIdle: "rgba(99,102,241,0.25)",
+  },
+  {
+    title: "Enterprise",
+    icon: <Crown size={22} />,
+    monthlyPrice: 49,
+    yearlyPrice: 39,
+    features: [
+      "Custom AI models",
+      "Team collaboration",
+      "API access",
+      "24/7 dedicated support",
+      "White-label options",
+    ],
+    buttonLabel: "Contact Sales",
+    highlight: false,
+    linkto: "/contact-us",
+    gradient: "from-purple-500 to-pink-500",
+    glowColor: "rgba(168,85,247,0.15)",
+    borderIdle: "rgba(168,85,247,0.12)",
+  },
+];
+
+/* ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ Styles ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+const sectionStyles: React.CSSProperties = {
+  position: "relative",
+  overflow: "hidden",
+  padding: "5rem 1rem 6rem",
+  background: "transparent",
+};
+
+/* ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+const PricingComponent = () => {
+  const navigate = useNavigate();
+  const [isYearly, setIsYearly] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const priceRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const orbsRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLDivElement>(null);
+
+  /* ΓöÇΓöÇ Set card ref helper ΓöÇΓöÇ */
+  const setCardRef = useCallback(
+    (index: number) => (el: HTMLDivElement | null) => {
+      cardsRef.current[index] = el;
+    },
+    []
+  );
+  const setPriceRef = useCallback(
+    (index: number) => (el: HTMLSpanElement | null) => {
+      priceRefs.current[index] = el;
+    },
+    []
+  );
+
+  /* ΓöÇΓöÇ GSAP Master Timeline ΓöÇΓöÇ */
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      /* ΓöÇΓöÇ Floating orbs ΓöÇΓöÇ */
+      if (orbsRef.current) {
+        const orbs = orbsRef.current.querySelectorAll(".pricing-orb");
+        orbs.forEach((orb, i) => {
+          gsap.to(orb, {
+            y: `random(-40, 40)`,
+            x: `random(-30, 30)`,
+            scale: `random(0.8, 1.2)`,
+            duration: `random(4, 7)`,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: i * 0.5,
+          });
+          gsap.to(orb, {
+            opacity: `random(0.3, 0.7)`,
+            duration: `random(2, 4)`,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: i * 0.3,
+          });
+        });
+      }
+
+      /* ΓöÇΓöÇ Heading reveal ΓöÇΓöÇ */
+      if (headingRef.current) {
+        const headingEls = headingRef.current.querySelectorAll(".pricing-heading-reveal");
+        gsap.fromTo(
+          headingEls,
+          { y: 60, opacity: 0, clipPath: "inset(100% 0 0 0)" },
+          {
+            y: 0,
+            opacity: 1,
+            clipPath: "inset(0% 0 0 0)",
+            duration: 1,
+            stagger: 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: headingRef.current,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      /* ΓöÇΓöÇ Toggle reveal ΓöÇΓöÇ */
+      if (toggleRef.current) {
+        gsap.fromTo(
+          toggleRef.current,
+          { y: 30, opacity: 0, scale: 0.9 },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: "back.out(1.7)",
+            scrollTrigger: {
+              trigger: toggleRef.current,
+              start: "top 90%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      /* ΓöÇΓöÇ Card entrance + price counter ΓöÇΓöÇ */
+      cardsRef.current.forEach((card, i) => {
+        if (!card) return;
+
+        /* Card slide-up */
+        gsap.fromTo(
+          card,
+          { y: 100, opacity: 0, rotateX: 8, scale: 0.92 },
+          {
+            y: 0,
+            opacity: 1,
+            rotateX: 0,
+            scale: 1,
+            duration: 1,
+            delay: i * 0.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 90%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+
+        /* Feature items stagger */
+        const features = card.querySelectorAll(".pricing-feature-item");
+        gsap.fromTo(
+          features,
+          { x: -20, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.5,
+            stagger: 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 80%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+
+        /* Animated gradient border shimmer */
+        const borderEl = card.querySelector(".pricing-card-border");
+        if (borderEl) {
+          gsap.to(borderEl, {
+            backgroundPosition: "200% center",
+            duration: 3,
+            repeat: -1,
+            ease: "none",
+          });
+        }
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  /* ΓöÇΓöÇ Price counter animation on toggle ΓöÇΓöÇ */
+  useEffect(() => {
+    priceRefs.current.forEach((priceEl, i) => {
+      if (!priceEl) return;
+      const plan = pricingPlans[i];
+      const targetPrice = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+
+      gsap.fromTo(
+        { val: 0 },
+        { val: targetPrice },
+        {
+          val: targetPrice,
+          duration: 0.8,
+          ease: "power2.out",
+          onUpdate: function () {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if (priceEl) priceEl.textContent = `$${Math.round((this as any).targets()[0].val)}`;
+          },
+        }
+      );
+    });
+  }, [isYearly]);
+
+  /* ΓöÇΓöÇ 3D Tilt on hover ΓöÇΓöÇ */
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
+    const card = cardsRef.current[index];
+    if (!card) return;
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+    gsap.to(card, {
+      rotateY: x * 8,
+      rotateX: -y * 8,
+      transformPerspective: 800,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+
+    /* Move glow */
+    const glow = card.querySelector(".pricing-card-glow") as HTMLElement;
+    if (glow) {
+      gsap.to(glow, {
+        x: x * 80,
+        y: y * 80,
+        opacity: 1,
+        duration: 0.4,
+      });
+    }
+  };
+
+  const handleMouseLeave = (index: number) => {
+    const card = cardsRef.current[index];
+    if (!card) return;
+    gsap.to(card, {
+      rotateY: 0,
+      rotateX: 0,
+      duration: 0.6,
+      ease: "elastic.out(1, 0.5)",
+    });
+    const glow = card.querySelector(".pricing-card-glow") as HTMLElement;
+    if (glow) {
+      gsap.to(glow, { opacity: 0, duration: 0.4 });
+    }
+  };
+
+  const getPrice = (plan: (typeof pricingPlans)[0]) =>
+    isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+
+  const getLink = (plan: (typeof pricingPlans)[0]) => {
+    if (plan.title === "Pro") {
+      return `${plan.linkto}${getPrice(plan)}`;
+    }
+    return plan.linkto;
+  };
+
   return (
-
     <section ref={sectionRef} style={sectionStyles} id="pricing-section">
-      {/* ── Inline Styles ── */}
+      {/* ΓöÇΓöÇ Inline Styles ΓöÇΓöÇ */}
       <style>{`
         @keyframes pricing-shimmer {
           0% { background-position: 0% center; }
@@ -158,7 +459,7 @@ const PricingMainComponent = () => {
         }
       `}</style>
 
-      {/* ── Background Floating Orbs ── */}
+      {/* ΓöÇΓöÇ Background Floating Orbs ΓöÇΓöÇ */}
       <div ref={orbsRef} className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="pricing-orb absolute -top-20 -left-20 h-72 w-72 rounded-full bg-indigo-500/10 blur-3xl" />
         <div className="pricing-orb absolute top-1/3 right-0 h-96 w-96 rounded-full bg-cyan-500/8 blur-3xl" />
@@ -166,7 +467,7 @@ const PricingMainComponent = () => {
         <div className="pricing-orb absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/6 blur-3xl" />
       </div>
       <div className="relative z-10 mx-auto max-w-6xl">
-        {/* ── Section Header ── */}
+        {/* ΓöÇΓöÇ Section Header ΓöÇΓöÇ */}
         <div ref={headingRef} className="mb-10 text-center">
           <div className="pricing-heading-reveal inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-400 dark:text-indigo-300 mb-5">
             <Sparkles size={14} />
@@ -189,7 +490,7 @@ const PricingMainComponent = () => {
           </p>
         </div>
 
-        {/* ── Monthly / Yearly Toggle ── */}
+        {/* ΓöÇΓöÇ Monthly / Yearly Toggle ΓöÇΓöÇ */}
         <div ref={toggleRef} className="mb-14 flex items-center justify-center gap-3">
           <div
             className="pricing-toggle-track border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-800/60"
@@ -229,7 +530,7 @@ const PricingMainComponent = () => {
           </div>
         </div>
 
-        {/* ── Pricing Cards ── */}
+        {/* ΓöÇΓöÇ Pricing Cards ΓöÇΓöÇ */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-8 items-stretch">
           {pricingPlans.map((plan, index) => (
             <div
@@ -345,17 +646,12 @@ const PricingMainComponent = () => {
 
         <div className="mt-16 text-center">
           <p className="text-sm text-slate-400 dark:text-slate-500">
-            🔒 Secured with 256-bit SSL encryption&nbsp;&nbsp;•&nbsp;&nbsp;Cancel anytime&nbsp;&nbsp;•&nbsp;&nbsp;No hidden fees
+            ≡ƒöÆ Secured with 256-bit SSL encryption&nbsp;&nbsp;ΓÇó&nbsp;&nbsp;Cancel anytime&nbsp;&nbsp;ΓÇó&nbsp;&nbsp;No hidden fees
           </p>
         </div>
       </div>
     </section>
-
-    <div>
-      <PricingComponent />
-    </div>
-
   );
 };
 
-export default PricingMainComponent;
+export default PricingComponent;

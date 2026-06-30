@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 
 export interface SpeechVoiceOption {
   id: string;
@@ -112,7 +112,7 @@ const getLanguageLabel = (lang: string): string => {
   }
 };
 
-const buildWordRanges = (inputText: string): WordRange[] => {
+,const buildWordRanges = (inputText: string): WordRange[] => {
   if (!inputText.trim()) {
     return [];
   }

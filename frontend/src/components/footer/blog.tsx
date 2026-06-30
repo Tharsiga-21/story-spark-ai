@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 interface DevToArticle {
@@ -146,7 +146,7 @@ const Blog = () => {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

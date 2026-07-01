@@ -187,27 +187,7 @@ import { useNavigate, useLocation } from "react-router-dom";
         </div>
       </div>
 
-      {menuOpen && (
-        <div className="lg:hidden border-t border-slate-200/70 dark:border-white/10 bg-white dark:bg-[#0B1120]/95 px-4 py-3">
-          <NavLink to="/" end className={mobileLinkClass} onClick={() => setMenuOpen(false)}>
-            Home
-          </NavLink>
-          <NavLink to="/explore" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>
-            Explore
-          </NavLink>
-          <NavLink to="/story-inspiration" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>
-            Stories
-          </NavLink>
-          <NavLink to="/community" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>
-            Community
-          </NavLink>
-          {loggedIn && (
-            <NavLink to="/dashboard" className={mobileLinkClass} onClick={() => setMenuOpen(false)}>
-              Dashboard
-            </NavLink>
-          )}
-        </div>
-      )}
+      {/* Mobile menu is rendered via AnimatePresence below */}
 
 
 

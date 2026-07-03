@@ -199,6 +199,31 @@ describe("RecommendationService.getPersonalizedRecommendations", () => {
     expect(fallbackPostQuery.lean).toHaveBeenCalledTimes(1);
   });
 
+  it("caps the reading history exclusion list to 100 items for highly active users", async () => {
+    // 1. Arrange: Create a reading history with 150 unique post IDs
+    const massiveHistory = Array.from({ length: 150 }, () => new Types.ObjectId());
+
+    createUserQuery({
+      readingPreferences: undefined, // Forces fallback behavior to isolate $nin testing
+      readingHistory: massiveHistory,
+    });
+
+    const fallbackPost = createRecommendationPost(new Types.ObjectId());
+    createPostQuery([fallbackPost]);
+
+    // 2. Act: Execute the service
+    await RecommendationService.getPersonalizedRecommendations(token);
+
+    // 3. Assert: Verify the generated query capped the $nin array
+    const expectedCappedHistory = massiveHistory.slice(-100);
+
+    expect(mockedPost.find).toHaveBeenCalledTimes(1);
+    const mongoQuery = mockedPost.find.mock.calls[0][0];
+
+    expect(mongoQuery._id.$nin).toHaveLength(100);
+    expect(mongoQuery._id.$nin).toEqual(expectedCappedHistory);
+  });
+
   it("uses fallback popular posts when no preferences are available", async () => {
     const fallbackPost = createRecommendationPost(
       new Types.ObjectId("507f1f77bcf86cd799439016")

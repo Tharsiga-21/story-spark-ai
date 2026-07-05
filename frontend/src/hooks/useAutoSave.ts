@@ -12,23 +12,137 @@ interface DraftData {
   savedAt: string;
 }
 
+export const offlineQueue: Array<{ draftId: string; content: string; timestamp: number }> = [];
+let globalIsOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+
+export async function flushOfflineQueue(queue: Array<{ draftId: string; content: string; timestamp: number }>) {
+  for (const item of queue) {
+    await fetch("/api/v1/stories/save", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ draftId: item.draftId, content: item.content }),
+    });
+  }
+}
+
+// Multiple things can observe the "online" event at once: this module-level
+// listener (registered once, so a flush still happens even if no editor is
+// mounted) AND a per-instance listener inside every useAutoSave() call below.
+// Without coordination, each one would call flushOfflineQueue() against the
+// same shared `offlineQueue` array, sending duplicate save requests. All
+// callers share this single in-flight promise instead of racing separate
+// flushes, so a reconnect only ever triggers one real flush no matter how
+// many listeners fire.
+let inFlightFlush: Promise<void> | null = null;
+
+function triggerFlush(): Promise<void> {
+  if (inFlightFlush) return inFlightFlush;
+  if (offlineQueue.length === 0) return Promise.resolve();
+
+  inFlightFlush = (async () => {
+    try {
+      await flushOfflineQueue(offlineQueue);
+      offlineQueue.length = 0;
+    } finally {
+      inFlightFlush = null;
+    }
+  })();
+
+  return inFlightFlush;
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("offline", () => {
+    globalIsOnline = false;
+  });
+
+  window.addEventListener("online", () => {
+    globalIsOnline = true;
+    triggerFlush().catch((error) => {
+      console.error("Failed to flush offline queue:", error);
+    });
+  });
+}
+
 export function useAutoSave(draftId: string, title: string, content: string) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== "undefined" ? navigator.onLine : true);
+  const [pendingCount, setPendingCount] = useState<number>(offlineQueue.length);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const intervalTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const save = useCallback(() => {
+  const save = useCallback(async () => {
     try {
       setSaveStatus("saving");
       const draft: DraftData = { title, content, savedAt: new Date().toISOString() };
       localStorage.setItem(DRAFT_KEY_PREFIX + draftId, JSON.stringify(draft));
+
+      const currentOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
+      if (!currentOnline) {
+        offlineQueue.push({ draftId, content, timestamp: Date.now() });
+        setPendingCount(offlineQueue.length);
+        setLastSaved(new Date());
+        setSaveStatus("saved");
+        return;
+      }
+
+      const response = await fetch("/api/v1/stories/save", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ draftId, content }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save to server");
+      }
+
       setLastSaved(new Date());
       setSaveStatus("saved");
     } catch {
       setSaveStatus("error");
     }
   }, [draftId, title, content]);
+
+  useEffect(() => {
+    const handleOnline = async () => {
+      setIsOnline(true);
+      globalIsOnline = true;
+      if (offlineQueue.length > 0) {
+        try {
+          setSaveStatus("saving");
+          // Shares the same in-flight promise as the module-level listener
+          // and any other mounted useAutoSave() instance — only one real
+          // network flush happens per reconnect, no matter how many
+          // components are listening.
+          await triggerFlush();
+          setPendingCount(offlineQueue.length);
+          setLastSaved(new Date());
+          setSaveStatus("saved");
+        } catch (error) {
+          setSaveStatus("error");
+          console.error("Failed to flush offline queue:", error);
+        }
+      }
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      globalIsOnline = false;
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -41,7 +155,7 @@ export function useAutoSave(draftId: string, title: string, content: string) {
     return () => { if (intervalTimer.current) clearInterval(intervalTimer.current); };
   }, [save]);
 
-  return { saveStatus, lastSaved };
+  return { saveStatus, lastSaved, isOnline, pendingCount, save };
 }
 
 export function loadDraft(draftId: string) {

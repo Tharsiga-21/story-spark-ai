@@ -14,7 +14,6 @@ import cookieParser from "cookie-parser";
 import config from "./config";
 import { Routers } from "./router";
 import globalErrorHandler from "./app/middleware/global.error.handler";
-import { User } from "./app/modules/user/user.model";
 
 const app: Application = express();
 app.set("trust proxy", 1);

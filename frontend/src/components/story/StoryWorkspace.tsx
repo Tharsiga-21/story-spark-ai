@@ -13,6 +13,7 @@ import StoryCoverGenerator from "../cover-generator/StoryCoverGenerator";
 import StoryChecklist from "../checklist/StoryChecklist";
 import StoryRewritePanel from "../rewrite/StoryRewritePanel";
 import StoryBranchingEditor from "../branching/StoryBranchingEditor";
+import PlotHoleDetector from "../plot-hole/PlotHoleDetector";
 
 import {
   getSafeFileName,
@@ -258,6 +259,13 @@ const StoryWorkspace = () => {
 
 <StoryBranchingEditor
   storyTitle={currentStory.title}
+/>
+<PlotHoleDetector
+  story={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
 />
 
   <StoryViewer

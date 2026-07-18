@@ -40,6 +40,7 @@ validateAIProviderKeys();
 
 export default {
   env: process.env.NODE_ENV,
+  frontend_url: process.env.FRONTEND_URL,
   port: process.env.PORT || "5000",
   disable_logs: process.env.DISABLE_LOGS === "true" || process.env.VERCEL === "1",
   database_url: (() => {

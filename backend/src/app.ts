@@ -21,7 +21,9 @@ app.use(helmet());
 const defaultCorsOrigins =
   process.env.NODE_ENV === "development"
     ? ["http://localhost:4001", "http://localhost:4002"]
-    : ["https://storysparkai.vercel.app"];
+    : config.frontend_url
+      ? [config.frontend_url]
+      : [];
 
 // Get raw origins from configuration or defaults
 const rawCorsOrigins =
@@ -107,3 +109,4 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(globalErrorHandler);
 
 export default app;
+export { defaultCorsOrigins };

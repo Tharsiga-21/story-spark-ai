@@ -51,10 +51,11 @@ const SSInput = <T extends FieldValues>({
       >
         {label} {required && <span className="text-rose-500">*</span>}
       </label>
-      
-      <div className="relative mt-2 flex items-center">
+
+
+      <div className="relative mt-2 flex items-center w-full min-w-0">
         {icon && (
-          <span className="absolute left-3 text-gray-500 flex items-center pointer-events-none">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 flex items-center pointer-events-none">
             <i className={icon}></i>
           </span>
         )}
@@ -66,9 +67,6 @@ const SSInput = <T extends FieldValues>({
           autoComplete={autoComplete}
           autoFocus={autoFocus}
           {...register(name, validation)}
-
-<<<<<<< Updated upstream
-=======
         className={`w-full box-border max-w-full h-11 block rounded-xl border bg-transparent text-sm transition-all duration-200 ${
           icon ? "pl-10" : "px-4"
         } ${type === "password" ? "pr-10" : "pr-4"} ${
@@ -90,7 +88,7 @@ const SSInput = <T extends FieldValues>({
           <button
             type="button"
             onClick={() => setShowLocalPassword(!showLocalPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-slate-400 hover:text-slate-200 dark:text-slate-500 dark:hover:text-slate-300 z-10 focus:outline-none transition-colors cursor-pointer"
+            className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-slate-400 hover:text-slate-200 dark:text-slate-500 dark:hover:text-slate-300 z-10 focus:outline-none transition-colors cursor-pointer"
             aria-label={showLocalPassword ? "Hide password" : "Show password"}
             title={showLocalPassword ? "Hide password" : "Show password"}
           >

@@ -109,7 +109,6 @@ export const deleteCharacter = async (req: Request, res: Response, next: NextFun
     res.status(200).json({ success: true, message: 'Character deleted successfully' });
   } catch (error) {
     next(error);
-
 import { Character } from '../Character.model';
 import ApiError from '../errors/api_error';
 import httpStatus from 'http-status';

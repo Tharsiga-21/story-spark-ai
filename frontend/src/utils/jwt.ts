@@ -41,12 +41,12 @@ export const decodedToken = (token: string): CustomJwtPayload => {
   }
 
 
-  // 1. Validate required userId or _id claim
+  // 1. Validate required userId or _id claim, then normalize to decoded.userId
   const idToUse = decoded.userId || decoded._id || decoded.sub;
   if (typeof idToUse !== "string" || idToUse.trim() === "") {
     throw new Error("Token is missing a valid 'userId', '_id', or 'sub' claim.");
-
   }
+  decoded.userId = idToUse; // normalize: callers always find the user ID in decoded.userId
 
   // 2. Validate required email claim
   if (typeof decoded.email !== "string" || decoded.email.trim() === "") {

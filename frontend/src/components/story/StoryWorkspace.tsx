@@ -9,6 +9,7 @@ import ChapterSidebar from "./ChapterSidebar";
 import StoryViewer from "./StoryViewer";
 import ContinueStoryButton from "./ContinueStoryButton";
 import CharacterNetwork from "../CharacterNetwork";
+import StorySessionRecovery from "../recovery/StorySessionRecovery";
 
 import {
   getSafeFileName,
@@ -206,6 +207,16 @@ const StoryWorkspace = () => {
 
         {workspaceMode === "editor" ? (
           <>
+          <StorySessionRecovery
+  story={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+  onRestore={(draft) => {
+    console.log("Restore draft:", draft);
+  }}
+/>
             <StoryViewer
               chapters={currentStory.chapters}
               storyId={currentStory.id}

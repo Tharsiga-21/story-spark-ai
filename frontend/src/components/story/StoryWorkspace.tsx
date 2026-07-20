@@ -25,6 +25,7 @@ import GenreWeightControls from "../genre/GenreWeightControls";
 import StoryStylePresets from "../style/StoryStylePresets";
 import StoryPerspectiveSwitcher from "../perspective/StoryPerspectiveSwitcher";
 import StoryTonePresets from "../tone/StoryTonePresets";
+import StoryChapterGenerator from "../chapter-generator/StoryChapterGenerator";
 import StoryAudienceSelector from "../audience/StoryAudienceSelector";
 
 
@@ -357,6 +358,14 @@ const StoryWorkspace = () => {
 />
 <StoryAudienceSelector
   prompt={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+/>
+
+<StoryChapterGenerator
+  story={
     currentStory.chapters
       ?.map((chapter) => chapter.content)
       .join("\n\n") || ""

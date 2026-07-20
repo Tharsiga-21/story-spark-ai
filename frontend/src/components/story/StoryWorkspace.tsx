@@ -46,6 +46,7 @@ import StoryEndingAnalyzer from "../ending-analyzer/StoryEndingAnalyzer";
 import WritingChallengeGenerator from "../writing-challenges/WritingChallengeGenerator";
 import StoryNamingAssistant from "../naming-assistant/StoryNamingAssistant";
 import StoryPublishingReadiness from "../publishing-readiness/StoryPublishingReadiness";
+import StoryTagGenerator from "../story-tags/StoryTagGenerator";
 import {
   getSafeFileName,
   downloadBlob,
@@ -528,6 +529,14 @@ const StoryWorkspace = () => {
 />
 
 <StoryPublishingReadiness
+  story={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+/>
+
+<StoryTagGenerator
   story={
     currentStory.chapters
       ?.map((chapter) => chapter.content)

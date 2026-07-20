@@ -4,12 +4,11 @@ import toast, { Toaster } from "react-hot-toast";
 
 import { RootState } from "../../redux/store";
 import { getUserInfo } from "../../services/auth.service";
+
 import ChapterSidebar from "./ChapterSidebar";
-import DocumentStatsPanel from "./DocumentStatsPanel";
 import StoryViewer from "./StoryViewer";
 import ContinueStoryButton from "./ContinueStoryButton";
 import CharacterNetwork from "../CharacterNetwork";
-import { useDocumentStats } from "../../hooks/useDocumentStats";
 import StoryCoverGenerator from "../cover-generator/StoryCoverGenerator";
 import StoryChecklist from "../checklist/StoryChecklist";
 import StoryRewritePanel from "../rewrite/StoryRewritePanel";
@@ -31,6 +30,8 @@ import StoryTitleRating from "../title-rating/StoryTitleRating";
 import StoryRevisionChecklist from "../revision/StoryRevisionChecklist";
 import StoryAudienceSelector from "../audience/StoryAudienceSelector";
 import StoryKeywordExtractor from "../keywords/StoryKeywordExtractor";
+import StoryFactSheet from "../fact-sheet/StoryFactSheet";
+import StorySceneNavigator from "../scene-navigator/StorySceneNavigator";
 
 
 import {
@@ -45,9 +46,6 @@ const StoryWorkspace = () => {
     (state: RootState) => state.story.currentStory
   );
   const [workspaceMode, setWorkspaceMode] = useState<"editor" | "network">("editor");
-  const { docStats, chapterAvgWords, maxChapterWords } = useDocumentStats(
-    currentStory?.chapters
-  );
 
   const [selectedTheme, setSelectedTheme] = useState<
   "Classic" | "Novel" | "Minimal" | "Dark"
@@ -179,13 +177,9 @@ const StoryWorkspace = () => {
   return (
     <div className="flex bg-black h-screen">
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="flex flex-col h-screen border-r border-zinc-800">
-        <DocumentStatsPanel stats={docStats} chapterAvgWords={chapterAvgWords} />
-        <ChapterSidebar
-          chapters={currentStory.chapters}
-          maxChapterWords={maxChapterWords}
-        />
-      </div>
+      <ChapterSidebar
+        chapters={currentStory.chapters}
+      />
 
       <div className="flex flex-col flex-1">
         <div className="flex justify-between items-center p-4 border-b border-zinc-800 bg-zinc-900">
@@ -399,6 +393,22 @@ const StoryWorkspace = () => {
   }
 />
 
+<StoryFactSheet
+  story={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+/>
+
+<StorySceneNavigator
+  story={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+/>
+
   <StoryViewer
     chapters={currentStory.chapters}
     storyId={currentStory.id}
@@ -410,14 +420,7 @@ const StoryWorkspace = () => {
   </div>
 </>
         ) : (
-           <CharacterNetwork
-           storyId={currentStory.id}
-                       storyContent={
-             currentStory.chapters
-               ?.map((chapter) => chapter.content)
-                .join("\n\n") || ""
-            }
-          />
+          <CharacterNetwork storyId={currentStory.id} />
         )}
       </div>
     </div>

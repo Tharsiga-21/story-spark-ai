@@ -27,6 +27,7 @@ import StoryTonePresets from "../tone/StoryTonePresets";
 import StoryChapterGenerator from "../chapter-generator/StoryChapterGenerator";
 import PromptLibrary from "../prompts/PromptLibrary";
 import StoryTitleRating from "../title-rating/StoryTitleRating";
+import StoryRevisionChecklist from "../revision/StoryRevisionChecklist";
 import StoryAudienceSelector from "../audience/StoryAudienceSelector";
 
 
@@ -378,6 +379,8 @@ const StoryWorkspace = () => {
     console.log("Replace title:", newTitle);
   }}
 />
+
+<StoryRevisionChecklist />
 
   <StoryViewer
     chapters={currentStory.chapters}

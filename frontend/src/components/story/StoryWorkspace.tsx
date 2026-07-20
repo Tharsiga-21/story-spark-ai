@@ -25,7 +25,12 @@ import GenreWeightControls from "../genre/GenreWeightControls";
 import StoryStylePresets from "../style/StoryStylePresets";
 import StoryPerspectiveSwitcher from "../perspective/StoryPerspectiveSwitcher";
 import StoryTonePresets from "../tone/StoryTonePresets";
+import StoryChapterGenerator from "../chapter-generator/StoryChapterGenerator";
+import PromptLibrary from "../prompts/PromptLibrary";
+import StoryTitleRating from "../title-rating/StoryTitleRating";
+import StoryRevisionChecklist from "../revision/StoryRevisionChecklist";
 import StoryAudienceSelector from "../audience/StoryAudienceSelector";
+import StoryKeywordExtractor from "../keywords/StoryKeywordExtractor";
 
 
 import {
@@ -357,6 +362,37 @@ const StoryWorkspace = () => {
 />
 <StoryAudienceSelector
   prompt={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+/>
+
+<StoryChapterGenerator
+  story={
+    currentStory.chapters
+      ?.map((chapter) => chapter.content)
+      .join("\n\n") || ""
+  }
+/>
+
+<PromptLibrary
+  onInsertPrompt={(prompt) => {
+    console.log("Selected Prompt:", prompt);
+  }}
+/>
+
+<StoryTitleRating
+  title={currentStory.title}
+  onReplace={(newTitle) => {
+    console.log("Replace title:", newTitle);
+  }}
+/>
+
+<StoryRevisionChecklist />
+
+<StoryKeywordExtractor
+  story={
     currentStory.chapters
       ?.map((chapter) => chapter.content)
       .join("\n\n") || ""

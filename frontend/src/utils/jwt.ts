@@ -1,14 +1,14 @@
 import { jwtDecode, JwtPayload } from "jwt-decode";
 
 export interface CustomJwtPayload extends JwtPayload {
-  email?: string | undefined;
-  userId?: string | undefined;
-  _id?: string | undefined;
-  sub?: string | undefined;
-  name?: string | undefined;
-  postsCount?: number | undefined;
-  role?: string | undefined;
-  subscriptionType?: string | undefined;
+  // Standard JWT claim `sub` is inherited from JwtPayload — not redeclared here
+  email?: string;
+  userId?: string;
+  _id?: string;
+  name?: string;
+  postsCount?: number;
+  role?: string;
+  subscriptionType?: string;
 }
 
 /**

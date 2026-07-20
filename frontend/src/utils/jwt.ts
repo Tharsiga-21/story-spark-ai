@@ -24,7 +24,7 @@ export const isJwtTokenFormat = (token: string): boolean => {
  * Decodes a JWT token and strictly validates its payload structure and claims.
  * Throws an error if validation fails.
  */
-export const decodedToken = (token: string): CustomJwtPayload => {
+export const decodeToken = (token: string): CustomJwtPayload => {
   if (!isJwtTokenFormat(token)) {
     throw new Error("Token format is invalid. A JWT must consist of three dot-separated segments.");
   }

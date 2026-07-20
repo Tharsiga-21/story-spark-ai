@@ -420,7 +420,7 @@ def _get_int(prompt: str) -> int:
         try:
             return int(input(prompt))
         except ValueError:
-            print("⚠ Please enter a whole number.")
+                print("⚠ Please enter a whole number.")
 
 
 PROMPTS = {
